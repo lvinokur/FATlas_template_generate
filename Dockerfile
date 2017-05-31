@@ -32,6 +32,8 @@ ENV PYTHONPATH=/mrtrix3/scripts:$PYTHONPATH
 RUN mkdir /bids_input
 RUN mkdir /output
 COPY run.py /code/run.py
+RUN chmod 775 /run.py
+
 
 COPY version /version
 
