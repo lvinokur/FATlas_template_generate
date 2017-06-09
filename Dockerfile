@@ -14,7 +14,7 @@ RUN apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 
 ENV CXX=/usr/bin/g++-5
 
 #MRtrix3 setup
-RUN git clone https://github.com/MRtrix3/mrtrix3.git mrtrix3 && cd mrtrix3 && git checkout master && python configure -nogui && NUMBER_OF_PROCESSORS=1 python build
+RUN git clone https://github.com/MRtrix3/mrtrix3.git mrtrix3 && cd mrtrix3 && git checkout 3.0_RC1 && python configure -nogui && NUMBER_OF_PROCESSORS=1 python build
 RUN echo $'FailOnWarn: 1\n' > /etc/mrtrix.conf
 RUN if [ "$CIRCLECI" = "true" ]; then cd mrtrix3 && NUMBER_OF_PROCESSORS=1 python build; else cd mrtrix3 && python build; fi
 
