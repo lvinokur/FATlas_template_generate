@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y git python libeigen3-dev zlib1g-dev wge
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt-get update && apt-get install -y g++-5
 
-RUN wget -O- http://neuro.debian.net/lists/trusty.us-ca.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
+RUN wget -O- http://neuro.debian.net/lists/trusty.au.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
 
 # Software Prerequisites
 RUN apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && apt-get update
@@ -22,12 +22,23 @@ RUN apt-get install -y fsl-first-data
 RUN rm -f `which eddy`
 RUN mkdir /opt/eddy/
 RUN wget -qO- https://fsl.fmrib.ox.ac.uk/fsldownloads/patches/eddy-patch-fsl-5.0.9/centos6/eddy_openmp > /opt/eddy/eddy_openmp
+RUN wget -qO- https://fsl.fmrib.ox.ac.uk/fsldownloads/patches/eddy-patch-fsl-5.0.9/centos6/eddy_cuda7.5 > /opt/eddy/eddy_cuda
 RUN chmod 775 /opt/eddy/eddy_openmp
+RUN chmod 775 /opt/eddy/eddy_cuda
 
 # Unring
 RUN wget -qO- https://bitbucket.org/reisert/unring/get/8e5eeba67a1d.zip -O unring.zip && unzip -qq -o unring.zip -d /opt/ && rm -f unring.zip
 
+#HCP Pipelines other prerequisites:
+RUN apt-get install connectome-workbench
+RUN apt-get install python-numpy
+RUN apt-get install python-scipy
+RUN pip install nibabel
+RUN git clone https://github.com/Washington-University/gradunwarp.git $$ cd gradunwarp $$ git checkout v1.0.3 $$ python setup.py install
 
+#Pipelines
+
+RUN git clone https://github.com/Washington-University/Pipelines.git $$ cd Pipelines $ git checkout v3.22.0
 
 ENV CXX=/usr/bin/g++-5
 
@@ -39,9 +50,7 @@ RUN if [ "$CIRCLECI" = "true" ]; then cd mrtrix3 && NUMBER_OF_PROCESSORS=1 pytho
 
 
 
-RUN wget -O- http://neuro.debian.net/lists/trusty.us-ca.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
-RUN apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && apt-get update
-RUN apt-get install -y ants
+
 
 # Environment variables setup
 ENV FSLDIR=/usr/share/fsl/5.0
