@@ -1,4 +1,4 @@
-FROM BIDS-Apps/MRtrix3_connectome
+FROM ubuntu:14.04
 MAINTAINER Lea Vinokur <lea.vinokur@gmail.com>
 
 # Core system capabilities required
@@ -14,7 +14,6 @@ RUN wget -O- http://neuro.debian.net/lists/trusty.au.full | tee /etc/apt/sources
 RUN apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && apt-get update
 
 # fsl
-RUN apt-get install -y ants
 RUN apt-get install -y fsl-5.0-core
 RUN apt-get install -y fsl-first-data
 
@@ -34,22 +33,17 @@ RUN apt-get install connectome-workbench
 RUN apt-get install python-numpy
 RUN apt-get install python-scipy
 RUN pip install nibabel
-RUN git clone https://github.com/Washington-University/gradunwarp.git $$ cd gradunwarp $$ git checkout v1.0.3 $$ python setup.py install
+RUN git clone https://github.com/Washington-University/gradunwarp.git && cd gradunwarp && git checkout v1.0.3 && python setup.py install
 
 #Pipelines
 
-RUN git clone https://github.com/Washington-University/Pipelines.git $$ cd Pipelines $ git checkout v3.22.0
+RUN git clone https://github.com/Washington-University/Pipelines.git && cd Pipelines && git checkout v3.22.0
 
 ENV CXX=/usr/bin/g++-5
 
 #MRtrix3 setup
 RUN git clone https://github.com/MRtrix3/mrtrix3.git mrtrix3 && cd mrtrix3 && git checkout 3.0_RC2 && python configure -nogui && NUMBER_OF_PROCESSORS=1 python build
-RUN echo $'FailOnWarn: 1\n' > /etc/mrtrix.conf
-RUN if [ "$CIRCLECI" = "true" ]; then cd mrtrix3 && NUMBER_OF_PROCESSORS=1 python build; else cd mrtrix3 && python build; fi
-
-
-
-
+#RUN echo $'FailOnWarn: 1\n' > /etc/mrtrix.conf
 
 
 # Environment variables setup
